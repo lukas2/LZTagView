@@ -12,9 +12,11 @@ Tags are conceptually tuples of `NSString` x `UIColor`.
 * Tapping a suggested tag adds it.
 * If the horizontal space is exhausted, a new line is added.
 
-![LZTagView](images/lztagview1.png "LZTagView")
-![LZTagView](images/lztagview2.png "LZTagView")
-![LZTagView](images/lztagview3.png "LZTagView")
+![LZTagView](/LZTagView/master/images/lztagview1.png "LZTagView")
+
+![LZTagView](/LZTagView/master/images/lztagview2.png "LZTagView")
+
+![LZTagView](/LZTagView/master/images/lztagview3.png "LZTagView")
 
 Example project included.
 
