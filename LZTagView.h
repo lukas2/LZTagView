@@ -37,7 +37,7 @@
 #define PADDING_BETWEEN_TAGS 5
 #define BUBBLE_PADDING 5
 
-#define MIN_WIDTH_FOR_TEXT_FIELD 20
+#define MIN_WIDTH_FOR_TEXT_FIELD 25
 #define MIN_WIDTH_FOR_TAPPABLE_AREA 5
 
 #define TAG_OK 1
@@ -47,12 +47,12 @@
 @interface LZTagView : UIView <UITextFieldDelegate>
 {
     CGFloat         _currentX;
+    NSUInteger      _currentLine;
     UITextField    *_textField;
 }
 
 @property (strong, nonatomic) NSMutableArray *tags;
 @property (strong, nonatomic) NSMutableArray *suggestedTags;
-@property NSInteger currentLine;
 
 - (NSSet *) tagSetOfStrings;
 

@@ -31,14 +31,12 @@
 @implementation LZTagView
 
 @synthesize tags, suggestedTags;
-@synthesize currentLine;
 
-// create some tags for demonstration purposes
 - (void) defaultInit
 {
-    if(!self.tags) self.tags = [[NSMutableArray alloc] init];
-    if(!self.suggestedTags) self.suggestedTags = [[NSMutableArray alloc] init];
-    self.currentLine = 0;
+    if(!self.tags)          self.tags           = [[NSMutableArray alloc] init];
+    if(!self.suggestedTags) self.suggestedTags  = [[NSMutableArray alloc] init];
+    _currentLine = 0;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -53,7 +51,6 @@
 // this constructor is called when using this view in a storyboard
 - (id)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder])) {
-        NSLog(@"init with coder");
         [self defaultInit];
     }
     return self;
@@ -68,19 +65,19 @@
     
     // set height to what is neccessary for first row
     
-    if(ownFrame.size.height != LINE_HEIGHT){
+    if( ownFrame.size.height != LINE_HEIGHT )
+    {
         ownFrame.size.height = LINE_HEIGHT + TOP_AND_BOTTOM_PADDING;
-        [self setFrame:ownFrame];
+        self.frame = ownFrame;
     }
     
-    [self.layer setBorderColor:[[UIColor colorWithRed:190.0f/255.0f
-                                                green:190.0f/255.0f
-                                                 blue:190.0f/255.0f
-                                                alpha:1.0]
-                                CGColor]];
-    
-    [self.layer setBorderWidth: 1.0];
-    
+    self.layer.borderColor = [[UIColor colorWithRed:190.0f/255.0f
+                                              green:190.0f/255.0f
+                                               blue:190.0f/255.0f
+                                              alpha:1.0]
+                                CGColor];
+
+    self.layer.borderWidth = 1.0;
     [self layoutCustomViews];
 }
 
@@ -94,17 +91,17 @@
 {
     CGRect ownFrame = self.frame;
     ownFrame.size.height += LINE_HEIGHT;
-    [self setFrame:ownFrame];
-    _currentX = LEFT_PADDING;
-    self.currentLine += 1;
+    self.frame = ownFrame;
+    _currentX       = LEFT_PADDING;
+    _currentLine    += 1;
 }
 
 - (CGFloat) remainingWidthInCurrentLine
 {
     // the line of the label is identified by its frame's origin.y value
-    CGFloat originY = self.currentLine * LINE_HEIGHT + TOP_AND_BOTTOM_PADDING;
-    CGFloat availableX = self.frame.size.width - 5;
-    
+    CGFloat originY     = _currentLine * LINE_HEIGHT + TOP_AND_BOTTOM_PADDING;
+    CGFloat availableX  = self.frame.size.width - 5;
+
     for(UIView *subview in self.subviews)
     {
         if([subview class] == [UILabel class])
@@ -123,82 +120,83 @@
     return availableX - MIN_WIDTH_FOR_TAPPABLE_AREA;
 }
 
+- (UILabel *) labelWithTapRecognizerForTag:(LZTag *) tag WithSelector:(SEL)selector
+{
+    UILabel *label = [[UILabel alloc] init];
+    
+    label.backgroundColor = [UIColor clearColor];
+    label.text = tag.title;
+    label.userInteractionEnabled = YES;
+    
+    UITapGestureRecognizer *tapRecognizer =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:selector];
+    
+    tapRecognizer.numberOfTapsRequired = 1;
+    [label addGestureRecognizer:tapRecognizer];
+    
+    [label sizeToFit];
+    
+    return label;
+}
+
+- (CGRect) bubbleFrameForLabel: (UILabel *) label
+{
+    CGRect bubbleFrame = label.frame;
+    bubbleFrame.size.width  += BUBBLE_PADDING;
+    bubbleFrame.origin.x    -= BUBBLE_PADDING / 2;
+    return bubbleFrame;
+}
+
 - (void) layoutTagBubbles
 {
-    self.currentLine = 0;
+    _currentLine = 0;
     _currentX = LEFT_PADDING;
     
     // each time start from scratch, but leave the text field
     
     for(UIView *subview in self.subviews)
     {
-        if([subview class] != [UITextView class])
+        if([subview class] != [UITextField class])
             [subview removeFromSuperview];
     }
     
     for( LZTag *tag in self.tags )
     {
-        UILabel *label = [[UILabel alloc] init];
-        
-        [label setBackgroundColor:[UIColor clearColor]];
-        [label setText:tag.title];
-
-        // make tags tappable (tap = remove this tag)
-        
-        UITapGestureRecognizer *tapRecognizer =
-            [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                    action:@selector(removeTag:)];
-        
-        [tapRecognizer setNumberOfTapsRequired:1];
-        
-        [label setUserInteractionEnabled:YES];
-        [label addGestureRecognizer:tapRecognizer];
-        
-        [label sizeToFit];
-        
-        // position frame and calculate where next tag can be drawn
-        
+        UILabel *label = [self labelWithTapRecognizerForTag:tag
+                                               WithSelector:@selector(removeTag:)];
         CGRect labelFrame = label.frame;
         
         if(labelFrame.size.width > [self remainingWidthInCurrentLine])
             [self addNewLine];
         
         labelFrame.origin.x = _currentX + BUBBLE_PADDING / 2;
-        labelFrame.origin.y = LINE_HEIGHT * self.currentLine + TOP_AND_BOTTOM_PADDING;
+        labelFrame.origin.y = LINE_HEIGHT * _currentLine + TOP_AND_BOTTOM_PADDING;
         
         _currentX += labelFrame.size.width + PADDING_BETWEEN_TAGS + BUBBLE_PADDING;
-  
         [label setFrame:labelFrame];
         
-        // add bubble background
-        
-        // the bubble background consists of a uiview that has an extra CALayer
-        // added to it.
-        
-        CGRect bubbleFrame = labelFrame;
-        bubbleFrame.size.width += BUBBLE_PADDING;
-        bubbleFrame.origin.x -= BUBBLE_PADDING / 2;
-        
-        UIView *bubbleView = [self makeBubbleViewForTag:tag WithFrame:bubbleFrame];
+        // bubble background view
+        UIView *bubbleView = [self bubbleViewForTag:tag
+                                          WithFrame:[self bubbleFrameForLabel:label]];
         
         [self addSubview:bubbleView];
         [self addSubview:label];
     }
 }
 
-- (UIView *) makeBubbleViewForTag:(LZTag *)tag WithFrame:(CGRect)frame
+- (UIView *) bubbleViewForTag:(LZTag *)tag WithFrame:(CGRect)frame
 {
-    UIView *bubbleView = [[UIView alloc] initWithFrame:frame];
-    
-    CALayer *bubbleLayer = [CALayer layer];
+    UIView *bubbleView      = [[UIView alloc] initWithFrame:frame];
+    CALayer *bubbleLayer    = [CALayer layer];
     
     bubbleLayer.backgroundColor = tag.color.CGColor;
-    bubbleLayer.shadowOffset = CGSizeMake(0, 1);
-    bubbleLayer.shadowRadius = 1.0;
-    bubbleLayer.shadowColor = [UIColor blackColor].CGColor;
-    bubbleLayer.shadowOpacity = 0.9;
-    bubbleLayer.cornerRadius = 2.0;
-    bubbleLayer.frame = CGRectMake(0,0,frame.size.width,frame.size.height);
+    bubbleLayer.shadowOffset    = CGSizeMake(0, 1);
+    bubbleLayer.shadowRadius    = 1.0;
+    bubbleLayer.shadowColor     = [UIColor blackColor].CGColor;
+    bubbleLayer.shadowOpacity   = 0.9;
+    bubbleLayer.cornerRadius    = 2.0;
+    bubbleLayer.frame           = CGRectMake(0, 0, frame.size.width, frame.size.height);
     
     [bubbleView.layer insertSublayer:bubbleLayer atIndex:0];
     
@@ -226,6 +224,7 @@
         [self.suggestedTags removeObject:tag];
         [self layoutCustomViews];
     }
+
 }
 
 - (UIView *) suggestedTagsView
@@ -240,34 +239,20 @@
     
     NSMutableArray * labels = [[NSMutableArray alloc] init];
     
-    NSLog(@"--- suggestedTags: %@", self.suggestedTags);
-    
     for( LZTag *tag in self.suggestedTags )
     {
-        UILabel *label = [[UILabel alloc] init];
-        [label setText:tag.title];
-        [label setBackgroundColor:[UIColor clearColor]];
-        
-        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] init];
-        [tapRecognizer setNumberOfTapsRequired:1];
-        [tapRecognizer addTarget:self action:@selector(addTagFromSuggestions:)];
-        [label setUserInteractionEnabled:YES];
-        [label addGestureRecognizer:tapRecognizer];
-        
-        [label sizeToFit];
+        UILabel *label = [self labelWithTapRecognizerForTag:tag
+                                               WithSelector:@selector(addTagFromSuggestions:)];
         
         CGRect labelFrame = label.frame;
         labelFrame.origin.x = startX;
         labelFrame.origin.y = suggestedTagsView.frame.size.height / 2 - labelFrame.size.height / 2;
         startX += PADDING_BETWEEN_TAGS + labelFrame.size.width + BUBBLE_PADDING;
         
-        [label setFrame:labelFrame];
+        label.frame = labelFrame;
         
-        CGRect bubbleFrame = labelFrame;
-        bubbleFrame.size.width += BUBBLE_PADDING;
-        bubbleFrame.origin.x -= BUBBLE_PADDING / 2;
-        
-        UIView *bubbleView = [self makeBubbleViewForTag:tag WithFrame:bubbleFrame];
+        UIView *bubbleView = [self bubbleViewForTag:tag
+                                          WithFrame:[self bubbleFrameForLabel:label]];
         [labels addObject:@{@"label":label,@"bubble":bubbleView}];
     }
     
@@ -275,8 +260,6 @@
     // the scroll view has to be, so that scrolling actually works.
     
     CGFloat requiredContentSize = 0;
-    
-    NSLog(@"number of Labels: %d", [labels count]);
     
     for( NSDictionary *dict in labels )
     {
@@ -303,10 +286,9 @@
 {
     if(!_textField) _textField = [[UITextField alloc] init];
     
-    for(UIView *subview in self.subviews)
-    {
-        //if(subview == _textField) [subview removeFromSuperview];
-    }
+    [_textField setReturnKeyType:UIReturnKeyDone];
+    [_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+    [_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
     
     if([self remainingWidthInCurrentLine] < MIN_WIDTH_FOR_TEXT_FIELD)
     {
@@ -315,9 +297,9 @@
     
     CGFloat textOriginY = LINE_HEIGHT / 2
         - _textField.font.ascender - _textField.font.descender
-        + LINE_HEIGHT * self.currentLine
+        + LINE_HEIGHT * _currentLine
         + TOP_AND_BOTTOM_PADDING;
-    
+
     [_textField setFrame:CGRectMake(_currentX,
                                    textOriginY,
                                    self.frame.size.width - _currentX,
@@ -422,16 +404,14 @@
     }
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    return YES;
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)sender {
-    NSLog(@"textField should Return?");
     [sender resignFirstResponder];
     return NO;
 }
-
-- (BOOL) textFieldShouldEndEditing:(UITextField *)textField
-{
-    return NO;
-}
-
 
 @end
