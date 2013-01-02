@@ -35,22 +35,14 @@
                             <constraint firstItem="fdL-hJ-GTT" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="yym-Tr-GLB"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="tagView" destination="Qop-XQ-Wmb" id="sRV-ZB-0Tg"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
             </objects>
         </scene>
     </scenes>
-    <classes>
-        <class className="LZTagView" superclassName="UIView">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/LZTagView.h"/>
-        </class>
-        <class className="LZViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/LZViewController.h"/>
-        </class>
-        <class className="NSLayoutConstraint" superclassName="NSObject">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

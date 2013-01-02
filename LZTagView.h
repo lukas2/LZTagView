@@ -47,11 +47,13 @@
 @interface LZTagView : UIView <UITextFieldDelegate>
 {
     CGFloat         _currentX;
-    NSInteger       _currentLine;
     UITextField    *_textField;
 }
 
 @property (strong, nonatomic) NSMutableArray *tags;
 @property (strong, nonatomic) NSMutableArray *suggestedTags;
+@property NSInteger currentLine;
+
+- (NSSet *) tagSetOfStrings;
 
 @end

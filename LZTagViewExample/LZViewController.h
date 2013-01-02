@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LZTagView.h"
 
 @interface LZViewController : UIViewController
+
+@property (strong, nonatomic) IBOutlet LZTagView *tagView;
 
 @end

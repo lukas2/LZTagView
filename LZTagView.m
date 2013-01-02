@@ -31,36 +31,14 @@
 @implementation LZTagView
 
 @synthesize tags, suggestedTags;
+@synthesize currentLine;
 
 // create some tags for demonstration purposes
 - (void) defaultInit
 {
-    LZTag *demoTag1  = [[LZTag alloc] initWithTag:@"Red"
-                                         andColor:[UIColor colorWithRed:1 green:0 blue:0 alpha:0.9]];
-    LZTag *demoTag2  = [[LZTag alloc] initWithTag:@"Green"
-                                         andColor:[UIColor colorWithRed:0 green:1 blue:0 alpha:0.9]];
-    LZTag *demoTag3  = [[LZTag alloc] initWithTag:@"Blue"
-                                         andColor:[UIColor colorWithRed:0.5 green:0.5 blue:1 alpha:0.9]];
-    
-    self.tags = [NSMutableArray arrayWithObjects:demoTag1, demoTag2, demoTag3, nil];
-    
-    LZTag *demoTag4  = [[LZTag alloc] initWithTag:@"Pink"
-                                         andColor:[UIColor colorWithRed:1 green:0 blue:1 alpha:0.9]];
-    LZTag *demoTag5  = [[LZTag alloc] initWithTag:@"Black"
-                                         andColor:[UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.9]];
-    
-    LZTag *demoTag6  = [[LZTag alloc] initWithTag:@"Test 1"];
-    LZTag *demoTag7  = [[LZTag alloc] initWithTag:@"Test 2"];
-    LZTag *demoTag8  = [[LZTag alloc] initWithTag:@"Test 3"];
-    LZTag *demoTag9  = [[LZTag alloc] initWithTag:@"Test 4"];
-    LZTag *demoTag10 = [[LZTag alloc] initWithTag:@"Test 5"];
-    LZTag *demoTag11 = [[LZTag alloc] initWithTag:@"Test 6"];
-    LZTag *demoTag12 = [[LZTag alloc] initWithTag:@"Test 7"];
-
-    self.suggestedTags = [NSMutableArray arrayWithObjects:demoTag4, demoTag5,
-                          demoTag6, demoTag7, demoTag8, demoTag9, demoTag10, demoTag11, demoTag12, nil];
-    
-    _currentLine = 0;
+    if(!self.tags) self.tags = [[NSMutableArray alloc] init];
+    if(!self.suggestedTags) self.suggestedTags = [[NSMutableArray alloc] init];
+    self.currentLine = 0;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -118,13 +96,13 @@
     ownFrame.size.height += LINE_HEIGHT;
     [self setFrame:ownFrame];
     _currentX = LEFT_PADDING;
-    _currentLine += 1;
+    self.currentLine += 1;
 }
 
 - (CGFloat) remainingWidthInCurrentLine
 {
     // the line of the label is identified by its frame's origin.y value
-    CGFloat originY = _currentLine * LINE_HEIGHT + TOP_AND_BOTTOM_PADDING;
+    CGFloat originY = self.currentLine * LINE_HEIGHT + TOP_AND_BOTTOM_PADDING;
     CGFloat availableX = self.frame.size.width - 5;
     
     for(UIView *subview in self.subviews)
@@ -147,14 +125,15 @@
 
 - (void) layoutTagBubbles
 {
-    _currentLine = 0;
+    self.currentLine = 0;
     _currentX = LEFT_PADDING;
     
-    // each time start from scratch
+    // each time start from scratch, but leave the text field
     
     for(UIView *subview in self.subviews)
     {
-        [subview removeFromSuperview];
+        if([subview class] != [UITextView class])
+            [subview removeFromSuperview];
     }
     
     for( LZTag *tag in self.tags )
@@ -185,7 +164,7 @@
             [self addNewLine];
         
         labelFrame.origin.x = _currentX + BUBBLE_PADDING / 2;
-        labelFrame.origin.y = LINE_HEIGHT * _currentLine + TOP_AND_BOTTOM_PADDING;
+        labelFrame.origin.y = LINE_HEIGHT * self.currentLine + TOP_AND_BOTTOM_PADDING;
         
         _currentX += labelFrame.size.width + PADDING_BETWEEN_TAGS + BUBBLE_PADDING;
   
@@ -241,50 +220,27 @@
         }
     }
     
-    [self.tags addObject:tag];
-    [self.suggestedTags removeObject:tag];
-    [self layoutCustomViews];
+    if(tag)
+    {
+        [self.tags addObject:tag];
+        [self.suggestedTags removeObject:tag];
+        [self layoutCustomViews];
+    }
 }
 
-- (void) layoutTextField
+- (UIView *) suggestedTagsView
 {
-    if(!_textField) _textField = [[UITextField alloc] init];
+    UIView *suggestedTagsView = [[UIView alloc]
+                                 initWithFrame:CGRectMake(0,0,self.window.frame.size.width, 40)];
     
-    for(UIView *subview in self.subviews)
-    {
-        if(subview == _textField) [subview removeFromSuperview];
-    }
-    
-    if([self remainingWidthInCurrentLine] < MIN_WIDTH_FOR_TEXT_FIELD)
-    {
-        [self addNewLine];
-    }
-    
-    CGFloat textOriginY = LINE_HEIGHT / 2
-        - _textField.font.ascender - _textField.font.descender
-        + LINE_HEIGHT * _currentLine
-        + TOP_AND_BOTTOM_PADDING;
-    
-    [_textField setFrame:CGRectMake(_currentX,
-                                   textOriginY,
-                                   self.frame.size.width - _currentX,
-                                   self.frame.size.height)];
-    
-    [_textField setDelegate:self]; // so we can detect end of input
-    
-    // Add the scrollview that is glued to the keyboard.
-    // It contains tag bubbles with tags that are stored in the suggestedTags property.
-    
-    // The code below is very similar to the one that creates the tag bubbles above.
-    // So it's not very DRY and can probably be optimized.
-    
-    UIView *suggestedTagsView = [[UIView alloc]initWithFrame:CGRectMake(0,0,self.window.frame.size.width, 40)];
     [suggestedTagsView setBackgroundColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:1]];
     
     UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:suggestedTagsView.frame];
     CGFloat startX = 5;
     
     NSMutableArray * labels = [[NSMutableArray alloc] init];
+    
+    NSLog(@"--- suggestedTags: %@", self.suggestedTags);
     
     for( LZTag *tag in self.suggestedTags )
     {
@@ -320,10 +276,12 @@
     
     CGFloat requiredContentSize = 0;
     
+    NSLog(@"number of Labels: %d", [labels count]);
+    
     for( NSDictionary *dict in labels )
     {
         UILabel *label = [dict objectForKey:@"label"];
-        requiredContentSize += label.frame.size.width + 5;
+        requiredContentSize += label.frame.size.width + 5 + BUBBLE_PADDING;
     }
     
     [scrollView setContentSize:CGSizeMake(requiredContentSize, scrollView.frame.size.height)];
@@ -338,10 +296,52 @@
     
     [suggestedTagsView addSubview:scrollView];
     
-    if([labels count] > 0)
+    return suggestedTagsView;
+}
+
+- (void) layoutTextField
+{
+    if(!_textField) _textField = [[UITextField alloc] init];
+    
+    for(UIView *subview in self.subviews)
+    {
+        //if(subview == _textField) [subview removeFromSuperview];
+    }
+    
+    if([self remainingWidthInCurrentLine] < MIN_WIDTH_FOR_TEXT_FIELD)
+    {
+        [self addNewLine];
+    }
+    
+    CGFloat textOriginY = LINE_HEIGHT / 2
+        - _textField.font.ascender - _textField.font.descender
+        + LINE_HEIGHT * self.currentLine
+        + TOP_AND_BOTTOM_PADDING;
+    
+    [_textField setFrame:CGRectMake(_currentX,
+                                   textOriginY,
+                                   self.frame.size.width - _currentX,
+                                   self.frame.size.height)];
+    
+    [_textField setDelegate:self]; // so we can detect end of input
+    
+    // Add the scrollview that is glued to the keyboard.
+    // It contains tag bubbles with tags that are stored in the suggestedTags property.
+    
+    // The code below is very similar to the one that creates the tag bubbles above.
+    // So it's not very DRY and can probably be optimized.
+    
+    UIView *suggestedTagsView = [self suggestedTagsView];
+    
+    if([self.suggestedTags count] > 0)
     {
         [_textField setInputAccessoryView:suggestedTagsView];
     }
+    else
+    {
+        [_textField setInputAccessoryView:nil];
+    }
+    
     [self addSubview:_textField];
 }
 
@@ -373,6 +373,17 @@
     if(alreadyExists) return TAG_ALREADY_EXISTS;
     if(tag.length == 0) return TAG_IS_EMPTY;
     return TAG_OK;
+}
+
+- (NSSet *) tagSetOfStrings
+{
+    NSMutableSet *tagsSet = [[NSMutableSet alloc] init];
+    for( LZTag *tag in self.tags )
+    {
+        [tagsSet addObject:tag.title];
+    }
+    
+    return [NSSet setWithSet:tagsSet];
 }
 
 - (void) alertWithTitle:(NSString *)title AndMessage:(NSString *)message
@@ -412,7 +423,13 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)sender {
+    NSLog(@"textField should Return?");
     [sender resignFirstResponder];
+    return NO;
+}
+
+- (BOOL) textFieldShouldEndEditing:(UITextField *)textField
+{
     return NO;
 }
 

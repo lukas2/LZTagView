@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		801FBDDF1691E6330030FFCA /* LZTag.m in Sources */ = {isa = PBXBuildFile; fileRef = 801FBDDE1691E6330030FFCA /* LZTag.m */; };
+		80118F241693BB470049CC7E /* LZTag.m in Sources */ = {isa = PBXBuildFile; fileRef = 80118F211693BB470049CC7E /* LZTag.m */; };
+		80118F251693BB470049CC7E /* LZTagView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80118F231693BB470049CC7E /* LZTagView.m */; };
 		8064FA311690EE4000A59D2B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8064FA301690EE4000A59D2B /* UIKit.framework */; };
 		8064FA331690EE4000A59D2B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8064FA321690EE4000A59D2B /* Foundation.framework */; };
 		8064FA351690EE4000A59D2B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8064FA341690EE4000A59D2B /* CoreGraphics.framework */; };
@@ -19,13 +20,14 @@
 		8064FA471690EE4000A59D2B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8064FA461690EE4000A59D2B /* Default-568h@2x.png */; };
 		8064FA4A1690EE4000A59D2B /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8064FA481690EE4000A59D2B /* MainStoryboard.storyboard */; };
 		8064FA4D1690EE4000A59D2B /* LZViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8064FA4C1690EE4000A59D2B /* LZViewController.m */; };
-		8064FA551690EF5000A59D2B /* LZTagView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8064FA541690EF5000A59D2B /* LZTagView.m */; };
 		8064FA5716910E7F00A59D2B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8064FA5616910E7F00A59D2B /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		801FBDDD1691E6330030FFCA /* LZTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LZTag.h; sourceTree = "<group>"; };
-		801FBDDE1691E6330030FFCA /* LZTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LZTag.m; sourceTree = "<group>"; };
+		80118F201693BB470049CC7E /* LZTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LZTag.h; sourceTree = "<group>"; };
+		80118F211693BB470049CC7E /* LZTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LZTag.m; sourceTree = "<group>"; };
+		80118F221693BB470049CC7E /* LZTagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LZTagView.h; sourceTree = "<group>"; };
+		80118F231693BB470049CC7E /* LZTagView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LZTagView.m; sourceTree = "<group>"; };
 		8064FA2C1690EE4000A59D2B /* LZTagViewExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LZTagViewExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8064FA301690EE4000A59D2B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		8064FA321690EE4000A59D2B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -42,8 +44,6 @@
 		8064FA491690EE4000A59D2B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		8064FA4B1690EE4000A59D2B /* LZViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LZViewController.h; sourceTree = "<group>"; };
 		8064FA4C1690EE4000A59D2B /* LZViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LZViewController.m; sourceTree = "<group>"; };
-		8064FA531690EF5000A59D2B /* LZTagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LZTagView.h; sourceTree = "<group>"; };
-		8064FA541690EF5000A59D2B /* LZTagView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LZTagView.m; sourceTree = "<group>"; };
 		8064FA5616910E7F00A59D2B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -65,11 +65,11 @@
 		8064FA211690EE4000A59D2B = {
 			isa = PBXGroup;
 			children = (
+				80118F201693BB470049CC7E /* LZTag.h */,
+				80118F211693BB470049CC7E /* LZTag.m */,
+				80118F221693BB470049CC7E /* LZTagView.h */,
+				80118F231693BB470049CC7E /* LZTagView.m */,
 				8064FA5616910E7F00A59D2B /* QuartzCore.framework */,
-				8064FA531690EF5000A59D2B /* LZTagView.h */,
-				8064FA541690EF5000A59D2B /* LZTagView.m */,
-				801FBDDD1691E6330030FFCA /* LZTag.h */,
-				801FBDDE1691E6330030FFCA /* LZTag.m */,
 				8064FA361690EE4000A59D2B /* LZTagViewExample */,
 				8064FA2F1690EE4000A59D2B /* Frameworks */,
 				8064FA2D1690EE4000A59D2B /* Products */,
@@ -191,8 +191,8 @@
 				8064FA3D1690EE4000A59D2B /* main.m in Sources */,
 				8064FA411690EE4000A59D2B /* LZAppDelegate.m in Sources */,
 				8064FA4D1690EE4000A59D2B /* LZViewController.m in Sources */,
-				8064FA551690EF5000A59D2B /* LZTagView.m in Sources */,
-				801FBDDF1691E6330030FFCA /* LZTag.m in Sources */,
+				80118F241693BB470049CC7E /* LZTag.m in Sources */,
+				80118F251693BB470049CC7E /* LZTagView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
